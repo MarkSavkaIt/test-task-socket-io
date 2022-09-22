@@ -1,5 +1,8 @@
 import React, { useState, useEffect } from "react";
-import io from "socket.io-client";
+import { useDispatch, useSelector } from "react-redux";
+import { useTypedSelector } from "redux/useSelector";
+import { io } from "socket.io-client";
+import { setData } from "../../redux/data/dataSlice";
 
 const socket = io("http://localhost:4000/");
 
@@ -7,7 +10,11 @@ interface IProps {}
 
 const Socket: React.FC<IProps> = () => {
   const [isConnected, setIsConnected] = useState<boolean>(socket.connected);
-  const [data, setData] = useState<any[]>([]);
+  const [data, setDataState] = useState<any[]>([]);
+  const dispatch = useDispatch();
+
+  const stateee = useTypedSelector((state) => state);
+  console.log("stateee", stateee);
 
   useEffect(() => {
     socket.on("connect", () => {
@@ -20,14 +27,13 @@ const Socket: React.FC<IProps> = () => {
     });
 
     socket.on("ticker", (res) => {
-      console.log("res2 : ", res);
-      setData(res);
+      dispatch(setData(res));
+      setDataState(res);
     });
 
     return () => {
       socket.off("connect");
       socket.off("disconnect");
-      socket.off("pong");
     };
   }, []);
 
