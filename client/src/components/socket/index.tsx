@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { useTypedSelector } from "redux/useSelector";
 import { io } from "socket.io-client";
 import { setData } from "../../redux/data/dataSlice";
@@ -10,11 +10,11 @@ interface IProps {}
 
 const Socket: React.FC<IProps> = () => {
   const [isConnected, setIsConnected] = useState<boolean>(socket.connected);
-  const [data, setDataState] = useState<any[]>([]);
-  const dispatch = useDispatch();
 
-  const stateee = useTypedSelector((state) => state);
-  console.log("stateee", stateee);
+  const dispatch = useDispatch();
+  // @ts-ignore
+  const data = useTypedSelector((state) => state.dataa);
+  console.log("stateee", Array.isArray(data), data);
 
   useEffect(() => {
     socket.on("connect", () => {
@@ -28,7 +28,6 @@ const Socket: React.FC<IProps> = () => {
 
     socket.on("ticker", (res) => {
       dispatch(setData(res));
-      setDataState(res);
     });
 
     return () => {
@@ -44,7 +43,7 @@ const Socket: React.FC<IProps> = () => {
       {data.length === 0 ? (
         <p>Can`t load carda</p>
       ) : (
-        data.map((ticket, index) => {
+        data.map((ticket: any, index: number) => {
           // great case to separate card
           // but not enough code line
           return (
